@@ -1,2 +1,1 @@
-export { component } from './component'
-export * from './types'
+export { install } from './zshInstall'

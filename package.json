@@ -1,20 +1,20 @@
 {
-  "name": "vitesse",
+  "name": "zsh-install",
   "version": "0.0.1",
   "packageManager": "pnpm@6.32.3",
-  "description": "vitesse",
+  "description": "zsh-install",
   "author": "Simon He",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git + git@github.com:Simon-He95/vitesse.git"
+    "url": "git + git@github.com:Simon-He95/zsh-install.git"
   },
   "bugs": {
-    "url": "https://github.com/Simon-He95/vitesse/issues"
+    "url": "https://github.com/Simon-He95/zsh-install/issues"
   },
   "keywords": [
-    "vitesse",
-    "vue"
+    "zsh-install",
+    "simon-js-tool"
   ],
   "exports": {
     ".": {
@@ -26,12 +26,12 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
   "bin": {
     "zsh-install": "dist/index.mjs"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "pkgroll --minify",
     "dev": "pkgroll --watch",

@@ -6,6 +6,11 @@
 npm i -g zsh-install
 ```
 
+## :boom: 新特性
+- 默认会提供一些常用的插件供选择安装 例如 `ni` `degit` `fnm` 
+
+## :raising_hand: 相关快捷命令
+- [zshrc实用命令](https://github.com/Simon-He95/directory-configuration/tree/main/zshrc)
 
 ## :eyes: 使用 
 ```bash

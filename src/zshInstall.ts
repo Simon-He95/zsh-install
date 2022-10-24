@@ -2,9 +2,12 @@ import { jsShell } from 'simon-js-tool'
 
 export function install() {
   const zsh_path = `${jsShell('echo $HOME')?.toString().trim()}/.oh-my-zsh/custom`
+  const hasBrew = (jsShell('brew -v') as string).startsWith('Homebrew')
+  if (!hasBrew)
+    jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"') // 安装brew
   const hasGum = (jsShell('gum -v') as string).startsWith('gum version')
   if (!hasGum)
-    jsShell('sudo apt update && sudo apt install gum') // 安装gum
+    jsShell('brew install gum') // 安装gum
   console.log('选择额外需要的插件:')
   const choose = (jsShell('gum choose "fnm" "degit" "ni" --no-limit') as string).trim().split('\n') as []
   jsShell([
@@ -21,7 +24,7 @@ export function install() {
    `, // 修改配置文件
   ])
   const map = {
-    fnm: 'curl -fsSL https://fnm.vercel.app/install | bash',
+    fnm: 'brew install fnm',
     degit: 'npm i -g degit',
     ni: 'npm i -g @antfu/ni',
   }

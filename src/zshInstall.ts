@@ -11,7 +11,7 @@ export function install() {
   console.log('选择额外需要的插件:')
   const choose = (jsShell('gum choose "fnm" "degit" "ni" --no-limit') as string).trim().split('\n') as []
   jsShell([
-    'wget https://gitee.com/Jiepq/ohmyzsh/blob/master/tools/install.sh && sh install.sh ', // 安装oh my zsh
+    'sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)"', // 安装oh my zsh
     'rm -rf install.sh', // 删除安装脚本
     `git clone https://gitee.com/xiaoqqya/spaceship-prompt.git "${zsh_path}/themes/spaceship-prompt" --depth=1`, // 安装 spaceship-prompt
     `ln -s "${zsh_path}/themes/spaceship-prompt/spaceship.zsh-theme" "${zsh_path}/themes/spaceship.zsh-theme"`, // 创建软连接

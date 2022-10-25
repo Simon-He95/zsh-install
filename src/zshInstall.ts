@@ -70,7 +70,7 @@ function getPlugin(key: string) {
     fnm: {
       command: 'brew install fnm',
       isInstalled: 'fnm -help',
-      source: '',
+      source: 'eval "$(fnm env --use-on-cd)"',
     },
     degit: {
       command: 'npm i -g degit',

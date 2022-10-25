@@ -22,7 +22,7 @@ export async function install() {
     'z',
   ]
   console.log('Select additional required plugins:')
-  const choose = (jsShell('gum choose "fnm" "degit" "ni" --no-limit') as string).trim().split('\n') as string[]
+  const choose = (jsShell('gum choose "fnm" "degit" "ni" "ccommand" --no-limit') as string).trim().split('\n') as string[]
 
   let zshrc = (jsShell('cat ~/.zshrc') as string).replace(THEME, '$1"spaceship"').replace(PLUGINS, '$1"git zsh-z zsh-autosuggestions zsh-syntax-highlighting"')
 
@@ -55,7 +55,7 @@ function getPlugin(key: string) {
     autosuggestions: {
       command: `git clone https://gitee.com/yanzhongqian/zsh-autosuggestions.git ${zsh_path}/plugins/zsh-autosuggestions`,
       isInstalled: `test -d ${zsh_path}/plugins/zsh-autosuggestions && echo "isInstalled"`,
-      source: '',
+      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh',
     },
     syntaxhighlighting: {
       command: `git clone https://gitee.com/lightnear/zsh-syntax-highlighting.git ${zsh_path}/plugins/zsh-syntax-highlighting`,
@@ -80,6 +80,11 @@ function getPlugin(key: string) {
     ni: {
       command: 'npm i -g ni',
       isInstalled: 'ni -help',
+      source: '',
+    },
+    ccommand: {
+      command: 'npm i -g ccommand',
+      isInstalled: 'ccommand -v && echo \'isInstalled\'',
       source: '',
     },
   }

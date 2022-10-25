@@ -1,4 +1,6 @@
 import { jsShell } from 'simon-js-tool'
+import ora from 'ora'
+import figlet from 'figlet'
 
 const THEME = /(ZSH_THEME=)"\w+"/
 const PLUGINS = /(plugins=)\([\w\s]+\)/mg
@@ -7,33 +9,52 @@ export async function install() {
   const hasBrew = (jsShell('brew -v') as string).startsWith('Homebrew')
   if (!hasBrew) {
     console.log('brew not found, install brew first')
-    jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"') // install brew
+    const spinner = ora({ text: 'Loading install brew', color: 'yellow', spinner: 'aesthetic' }).start()
+    await jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"') // install brew
+    spinner.succeed('brew installed successfully')
   }
+
   const hasGum = (jsShell('gum -v') as string).startsWith('gum version')
   if (!hasGum) {
     console.log('gum not found, install gum first')
-    jsShell('brew install gum') // install gum
+    const spinner = ora({ text: 'Loading install gum', color: 'yellow', spinner: 'aesthetic' }).start()
+    await jsShell('brew install gum') // install gum
+    spinner.succeed('gum installed successfully')
   }
+
   const base = [
     'ohmyzsh',
     'spaceship',
     'autosuggestions',
     'syntaxhighlighting',
     'z',
+    'vscode',
   ]
   console.log('Select additional required plugins:')
-  const choose = (jsShell('gum choose "fnm" "degit" "ni" "ccommand" --no-limit') as string).trim().split('\n') as string[]
+  const chooseOption = [
+    '"fnm"',
+    '"degit"',
+    '"ni"',
+    '"ccommand"',
+    '"pnpm"',
+    '"yarn"',
+    '"esno"',
+  ]
+  const choose = (jsShell(`gum choose ${chooseOption.join(' ')} --no-limit`) as string).trim().split('\n') as string[]
 
-  let zshrc = (jsShell('cat ~/.zshrc') as string).replace(THEME, '$1"spaceship"').replace(PLUGINS, '$1"git zsh-z zsh-autosuggestions zsh-syntax-highlighting"')
+  let zshrc = (jsShell('cat ~/.zshrc') as string).replace(THEME, '$1"spaceship"').replace(PLUGINS, '$1"git vscode zsh-z zsh-autosuggestions zsh-syntax-highlighting"')
 
   const allCommanders = [...base, ...choose]
-  allCommanders.forEach((key) => {
+
+  allCommanders.forEach(async (key) => {
     const { command, isInstalled, source } = getPlugin(key)
+    const spinner = ora({ text: `Loading install ${key}`, color: 'yellow', spinner: 'aesthetic' }).start()
     if (!jsShell(isInstalled)) {
       zshrc += source
-      return jsShell(command)
+      await jsShell(command)
+      spinner.succeed(`${key} installed successfully`)
     }
-    console.log(`${key} is installed`)
+    spinner.succeed(`${key} is installed`)
   })
   // 保存zshrc
   jsShell(`echo "${zshrc}" > ~/.zshrc`)
@@ -67,6 +88,11 @@ function getPlugin(key: string) {
       isInstalled: `test -d ${zsh_path}/plugins/zsh-z && echo "isInstalled"`,
       source: '$HOME/.oh-my-zsh/custom/plugins/zsh-z/zsh-z.plugin.zsh',
     },
+    vscode: {
+      command: `git clone https://github.com/valentinocossar/vscode.git ${zsh_path}/plugins/vscode`,
+      isInstalled: `test -d ${zsh_path}/plugins/vscode && echo "isInstalled"`,
+      source: '',
+    },
     fnm: {
       command: 'brew install fnm',
       isInstalled: 'fnm -help',
@@ -84,11 +110,37 @@ function getPlugin(key: string) {
     },
     ccommand: {
       command: 'npm i -g ccommand',
-      isInstalled: 'ccommand -v && echo \'isInstalled\'',
+      isInstalled: 'ccommand -v && echo "isInstalled"',
+      source: '',
+    },
+    pnpm: {
+      command: 'npm i -g pnpm',
+      isInstalled: 'pnpm -v && echo "isInstalled"',
+      source: '',
+    },
+    yarn: {
+      command: 'npm i -g yarn',
+      isInstalled: 'yarn -v && echo "isInstalled"',
+      source: '',
+    },
+    esno: {
+      command: 'npm i -g esno',
+      isInstalled: 'esno -v && echo "isInstalled"',
+      source: '',
+    },
+    rimraf: {
+      command: 'npm i -g rimraf',
+      isInstalled: 'rimraf --help && echo "isInstalled"',
       source: '',
     },
   }
   return plugins[key as keyof typeof plugins]
 }
 
-install()
+figlet('ccommand', (err, message) => {
+  if (err)
+    return console.log('Something went wrong...')
+  console.log(message)
+  install()
+})
+

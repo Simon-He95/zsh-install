@@ -1,4 +1,4 @@
-import { jsShell } from 'simon-js-tool'
+import { isWin, jsShell } from 'simon-js-tool'
 import ora from 'ora'
 import figlet from 'figlet'
 
@@ -6,11 +6,15 @@ const THEME = /(ZSH_THEME=)"\w+"/
 const PLUGINS = /(plugins=)\([\w\s]+\)/mg
 
 export async function install() {
+  if (isWin()) {
+    console.log('You need to run on linux or macos')
+    return
+  }
   const hasBrew = (jsShell('brew -v') as string).startsWith('Homebrew')
   if (!hasBrew) {
     console.log('brew not found, install brew first')
     const spinner = ora({ text: 'Loading install brew', color: 'yellow', spinner: 'aesthetic' }).start()
-    await jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"') // install brew
+    await jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"', true) // install brew
     spinner.succeed('brew installed successfully')
   }
 
@@ -18,7 +22,7 @@ export async function install() {
   if (!hasGum) {
     console.log('gum not found, install gum first')
     const spinner = ora({ text: 'Loading install gum', color: 'yellow', spinner: 'aesthetic' }).start()
-    await jsShell('brew install gum') // install gum
+    await jsShell('brew install gum', true) // install gum
     spinner.succeed('gum installed successfully')
   }
 
@@ -39,6 +43,8 @@ export async function install() {
     '"pnpm"',
     '"yarn"',
     '"esno"',
+    '"bun"',
+    '"rimraf"',
   ]
   const choose = (jsShell(`gum choose ${chooseOption.join(' ')} --no-limit`) as string).trim().split('\n') as string[]
 
@@ -100,7 +106,7 @@ function getPlugin(key: string) {
     },
     degit: {
       command: 'npm i -g degit',
-      isInstalled: 'degit -help',
+      isInstalled: 'test -d ~/.degit && echo "isInstalled"',
       source: '',
     },
     ni: {
@@ -131,6 +137,11 @@ function getPlugin(key: string) {
     rimraf: {
       command: 'npm i -g rimraf',
       isInstalled: 'rimraf --help && echo "isInstalled"',
+      source: '',
+    },
+    bun: {
+      command: 'brew install bun',
+      isInstalled: 'test -d ~/.bun && echo "isInstalled"',
       source: '',
     },
   }

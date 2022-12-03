@@ -20,7 +20,7 @@ zsh-install
 ## :memo: 说明
 - 会自动安装zsh及oh-my-zsh
 - spaceship主题
-- 插件:`zsh-z` `zsh-autosuggestions` `zsh-syntax-highlighting`
+- 插件:`zsh-z` `zsh-autosuggestions` `zsh-syntax-highlighting zsh-autocomplete`
 
 
 ## :warning: 注意

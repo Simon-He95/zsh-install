@@ -30,21 +30,23 @@ export async function install() {
     'ohmyzsh',
     'spaceship',
     'autosuggestions',
+    'autocomplete',
     'syntaxhighlighting',
     'z',
     'vscode',
   ]
   console.log('Select additional required plugins:')
   const chooseOption = [
-    '"fnm"',
-    '"degit"',
-    '"ni"',
-    '"ccommand"',
-    '"pnpm"',
-    '"yarn"',
-    '"esno"',
-    '"bun"',
-    '"rimraf"',
+    'fnm',
+    'degit',
+    'ni',
+    'pi',
+    'ccommand',
+    'pnpm',
+    'yarn',
+    'esno',
+    'bun',
+    'rimraf',
   ]
   const choose = (jsShell(`gum choose ${chooseOption.join(' ')} --no-limit`) as string).trim().split('\n') as string[]
 
@@ -84,6 +86,11 @@ function getPlugin(key: string) {
       isInstalled: `test -d ${zsh_path}/plugins/zsh-autosuggestions && echo "isInstalled"`,
       source: '$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh',
     },
+    autocomplete: {
+      command: `https://gitee.com/mirrors_marlonrichert/zsh-autocomplete.git ${zsh_path}/plugins/zsh-autocomplete`,
+      isInstalled: `test -d ${zsh_path}/plugins/zsh-autocomplete && echo "isInstalled"`,
+      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh',
+    },
     syntaxhighlighting: {
       command: `git clone https://gitee.com/lightnear/zsh-syntax-highlighting.git ${zsh_path}/plugins/zsh-syntax-highlighting`,
       isInstalled: `test -d ${zsh_path}/plugins/zsh-syntax-highlighting && echo "isInstalled"`,
@@ -112,6 +119,11 @@ function getPlugin(key: string) {
     ni: {
       command: 'npm i -g ni',
       isInstalled: 'ni -help',
+      source: '',
+    },
+    pi: {
+      command: 'npm i -g @simon_he/pi',
+      isInstalled: 'pi -help',
       source: '',
     },
     ccommand: {

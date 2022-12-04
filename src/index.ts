@@ -1,1 +1,1 @@
-export { install } from './zshInstall'
+export { run } from './zshInstall'

@@ -1,26 +1,34 @@
-import { isWin, jsShell } from 'simon-js-tool'
+import path from 'path'
+import { argv } from 'process'
+import { fileCopy, isWin, jsShell } from 'simon-js-tool'
 import ora from 'ora'
 import figlet from 'figlet'
+import colorize from '@simon_he/colorize'
+import { version } from '../package.json'
 
 const THEME = /(ZSH_THEME=)"\w+"/
 const PLUGINS = /(plugins=)\([\w\s]+\)/mg
+const commonPlugin = '~/.oh-my-zsh/plugins'
+const customPlugin = '~/.oh-my-zsh/custom/plugins'
+const customTheme = '~/.oh-my-zsh/custom/themes'
+const log = console.log
 
-export async function install() {
+async function install() {
   if (isWin()) {
-    console.log('You need to run on linux or macos')
+    log(colorize({ color: 'yellow', text: 'You need to run on linux or macos' }))
     return
   }
-  const hasBrew = (jsShell('brew -v') as string).startsWith('Homebrew')
+  const hasBrew = (jsShell('brew -v', 'pipe').result).startsWith('Homebrew')
   if (!hasBrew) {
-    console.log('brew not found, install brew first')
+    log(colorize({ color: 'magenta', text: 'brew not found, starting to install brew' }))
     const spinner = ora({ text: 'Loading install brew', color: 'yellow', spinner: 'aesthetic' }).start()
     await jsShell('/bin/bash -c "$(curl -fsSL https://gitee.com/ineo6/homebrew-install/raw/master/install.sh)"', true) // install brew
     spinner.succeed('brew installed successfully')
   }
 
-  const hasGum = (jsShell('gum -v') as string).startsWith('gum version')
+  const hasGum = (jsShell('gum -v', 'pipe').result).startsWith('gum version')
   if (!hasGum) {
-    console.log('gum not found, install gum first')
+    log(colorize({ color: 'magenta', text: 'gum not found, starting to install gum' }))
     const spinner = ora({ text: 'Loading install gum', color: 'yellow', spinner: 'aesthetic' }).start()
     await jsShell('brew install gum', true) // install gum
     spinner.succeed('gum installed successfully')
@@ -33,9 +41,9 @@ export async function install() {
     'autocomplete',
     'syntaxhighlighting',
     'z',
-    'vscode',
   ]
-  console.log('Select additional required plugins:')
+  log(colorize({ color: 'blue', text: 'Select additional required plugins:' }))
+
   const chooseOption = [
     'fnm',
     'degit',
@@ -48,9 +56,8 @@ export async function install() {
     'bun',
     'rimraf',
   ]
-  const choose = (jsShell(`gum choose ${chooseOption.join(' ')} --no-limit`) as string).trim().split('\n') as string[]
-
-  let zshrc = (jsShell('cat ~/.zshrc') as string).replace(THEME, '$1"spaceship"').replace(PLUGINS, '$1"git vscode zsh-z zsh-autosuggestions zsh-syntax-highlighting"')
+  const choose = jsShell(`gum choose ${chooseOption.join(' ')} --no-limit`, 'pipe').result.trim().split('\n') as string[]
+  let zshrc = jsShell('cat ~/.zshrc', 'pipe').result.replace(THEME, '$1"spaceship"').replace(PLUGINS, '$1"git zsh-z zsh-autosuggestions zsh-syntax-highlighting"')
 
   const allCommanders = [...base, ...choose]
 
@@ -69,7 +76,6 @@ export async function install() {
 }
 
 function getPlugin(key: string) {
-  const zsh_path = `${jsShell('echo $HOME')?.toString().trim()}/.oh-my-zsh/custom`
   const plugins = {
     ohmyzsh: {
       command: 'sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)" && rm -rf install.sh',
@@ -77,34 +83,29 @@ function getPlugin(key: string) {
       source: '',
     },
     spaceship: {
-      command: `git clone https://gitee.com/xiaoqqya/spaceship-prompt.git "${zsh_path}/themes/spaceship-prompt" --depth=1 && ln -s "${zsh_path}/themes/spaceship-prompt/spaceship.zsh-theme" "${zsh_path}/themes/spaceship.zsh-theme"`,
-      isInstalled: `test -d ${zsh_path}/themes/spaceship-prompt && echo "isInstalled"`,
-      source: '$HOME/.oh-my-zsh/custom/themes/spaceship.zsh-theme',
+      command: `git clone https://gitee.com/xiaoqqya/spaceship-prompt.git "${customTheme}/spaceship-prompt" --depth=1 && ln -s "${customTheme}spaceship-prompt/spaceship.zsh-theme" "${customTheme}/spaceship.zsh-theme"`,
+      isInstalled: `test -d ${customTheme}/spaceship-prompt && echo "isInstalled"`,
+      source: `${customTheme}/spaceship.zsh-theme`,
     },
     autosuggestions: {
-      command: `git clone https://gitee.com/yanzhongqian/zsh-autosuggestions.git ${zsh_path}/plugins/zsh-autosuggestions`,
-      isInstalled: `test -d ${zsh_path}/plugins/zsh-autosuggestions && echo "isInstalled"`,
-      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh',
+      command: `git clone https://gitee.com/yanzhongqian/zsh-autosuggestions.git ${customPlugin}/zsh-autosuggestions`,
+      isInstalled: `test -d ${customPlugin}/zsh-autosuggestions && echo "isInstalled"`,
+      source: `${customPlugin}/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh`,
     },
     autocomplete: {
-      command: `https://gitee.com/mirrors_marlonrichert/zsh-autocomplete.git ${zsh_path}/plugins/zsh-autocomplete`,
-      isInstalled: `test -d ${zsh_path}/plugins/zsh-autocomplete && echo "isInstalled"`,
-      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-autocomplete/zsh-autocomplete.plugin.zsh',
+      command: `https://gitee.com/mirrors_marlonrichert/zsh-autocomplete.git ${customPlugin}/zsh-autocomplete`,
+      isInstalled: `test -d ${customPlugin}/zsh-autocomplete && echo "isInstalled"`,
+      source: `${customPlugin}/zsh-autocomplete/zsh-autocomplete.plugin.zsh`,
     },
     syntaxhighlighting: {
-      command: `git clone https://gitee.com/lightnear/zsh-syntax-highlighting.git ${zsh_path}/plugins/zsh-syntax-highlighting`,
-      isInstalled: `test -d ${zsh_path}/plugins/zsh-syntax-highlighting && echo "isInstalled"`,
-      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh',
+      command: `git clone https://gitee.com/lightnear/zsh-syntax-highlighting.git ${customPlugin}/zsh-syntax-highlighting`,
+      isInstalled: `test -d ${customPlugin}/zsh-syntax-highlighting && echo "isInstalled"`,
+      source: `${customPlugin}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh`,
     },
     z: {
-      command: `git clone https://gitee.com/github-mirror-zsh/zsh-z.git ${zsh_path}/plugins/zsh-z`,
-      isInstalled: `test -d ${zsh_path}/plugins/zsh-z && echo "isInstalled"`,
-      source: '$HOME/.oh-my-zsh/custom/plugins/zsh-z/zsh-z.plugin.zsh',
-    },
-    vscode: {
-      command: `git clone https://github.com/valentinocossar/vscode.git ${zsh_path}/plugins/vscode`,
-      isInstalled: `test -d ${zsh_path}/plugins/vscode && echo "isInstalled"`,
-      source: '',
+      command: `git clone https://gitee.com/github-mirror-zsh/zsh-z.git ${customPlugin}/zsh-z`,
+      isInstalled: `test -d ${customPlugin}/plugins/zsh-z && echo "isInstalled"`,
+      source: `${customPlugin}/zsh-z/zsh-z.plugin.zsh`,
     },
     fnm: {
       command: 'brew install fnm',
@@ -160,10 +161,30 @@ function getPlugin(key: string) {
   return plugins[key as keyof typeof plugins]
 }
 
-figlet('ccommand', (err, message) => {
-  if (err)
-    return console.log('Something went wrong...')
-  console.log(message)
-  install()
-})
+export function run() {
+  const params = argv[2]
+  if (params === '-v' || params === 'version') {
+    log(colorize({ color: 'magenta', text: `zsh-install version: ${version}` }))
+    return
+  }
+  figlet('ccommand', (err, message) => {
+    if (err)
+      return log(colorize({ color: 'red', text: 'Something went wrong...' }))
+    log(colorize({ color: 'magenta', text: message! }))
+    install()
+  })
+  copyCommonPlugins()
+}
 
+function copyCommonPlugins() {
+  const plugins = ['git', 'last-working-dir', 'web-search']
+  const urls = plugins.map(plugin => path.resolve(__dirname, `../plugins/${plugin}`))
+  const { status, result } = fileCopy(urls, commonPlugin)
+  if (status === 0)
+    log(colorize({ color: 'green', text: 'common-plugin copy successfully 🎉' }))
+  else
+    throw new Error(result)
+}
+run()
+
+run()

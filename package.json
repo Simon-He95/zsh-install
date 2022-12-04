@@ -1,6 +1,6 @@
 {
   "name": "zsh-install",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "packageManager": "pnpm@6.32.3",
   "description": "zsh-install",
   "author": "Simon He",
@@ -48,10 +48,12 @@
     "release": "bumpp --commit --tag --push && git push origin --tags -f && npm publish"
   },
   "dependencies": {
+    "@simon_he/colorize": "^0.0.1",
     "@vueuse/core": "^8.1.1",
     "figlet": "^1.5.2",
+    "fs-extra": "^11.1.0",
     "ora": "^6.1.2",
-    "simon-js-tool": "^4.1.14",
+    "simon-js-tool": "^4.1.33",
     "vue": "^3.2.36"
   },
   "devDependencies": {

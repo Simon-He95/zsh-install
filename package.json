@@ -14,7 +14,7 @@
   },
   "keywords": [
     "zsh-install",
-    "simon-js-tool"
+    "lazy-js-utils"
   ],
   "exports": {
     ".": {
@@ -52,8 +52,8 @@
     "@vueuse/core": "^8.1.1",
     "figlet": "^1.5.2",
     "fs-extra": "^11.1.0",
+    "lazy-js-utils": "^0.0.5",
     "ora": "^6.1.2",
-    "simon-js-tool": "^4.1.33",
     "vue": "^3.2.36"
   },
   "devDependencies": {

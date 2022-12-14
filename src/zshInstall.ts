@@ -1,6 +1,6 @@
 import path from 'path'
 import { argv } from 'process'
-import { fileCopy, isWin, jsShell } from 'simon-js-tool'
+import { fileCopy, isWin, jsShell } from 'lazy-js-utils'
 import ora from 'ora'
 import figlet from 'figlet'
 import colorize from '@simon_he/colorize'
@@ -172,8 +172,8 @@ export function run() {
       return log(colorize({ color: 'red', text: 'Something went wrong...' }))
     log(colorize({ color: 'magenta', text: message! }))
     install()
+    copyCommonPlugins()
   })
-  copyCommonPlugins()
 }
 
 function copyCommonPlugins() {
@@ -187,4 +187,3 @@ function copyCommonPlugins() {
 }
 run()
 
-run()
